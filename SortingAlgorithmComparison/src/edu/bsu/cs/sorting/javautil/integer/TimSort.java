@@ -130,6 +130,9 @@ public class TimSort {
 	private final int[] runBase;
 	private final int[] runLen;
 
+	public static void sort(int[] a) {
+		sort(a, 0, a.length, null, 0, 0);
+	}
 	/**
 	 * Creates a TimSort instance to maintain the state of an ongoing sort.
 	 *
@@ -205,7 +208,7 @@ public class TimSort {
 	 *            usable size of work array
 	 * @since 1.8
 	 */
-	static void sort(int[] a, int lo, int hi, int[] work, int workBase,
+	static public void sort(int[] a, int lo, int hi, int[] work, int workBase,
 			int workLen) {
 		assert a != null && lo >= 0 && lo <= hi && hi <= a.length;
 

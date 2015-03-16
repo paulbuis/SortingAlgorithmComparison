@@ -7,6 +7,10 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.InvocationTargetException;
 
+import javax.swing.JFrame;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+
 /**
  * This program demonstrates the merge sort algorithm by sorting an array that
  * is filled with random numbers.
@@ -23,7 +27,7 @@ public class IntSortTester {
 			return false;
 		if (m.getParameters().length != 1)
 			return false;
-		return true;
+		return m.getParameterTypes()[0].getCanonicalName().equals("int[]");
 	}
 	
 	private static Method findRightMethod(String className) {
@@ -86,6 +90,8 @@ public class IntSortTester {
 		final int n = a.length;
 		for (int i = 0; i < n; i++) {
 			if (a[i] != sorted[i]) {
+				System.err.println("Error found at i=" + i);
+				System.err.println("" + a[i] + " should have been " + sorted[i]);
 				return false;
 			}
 		}
@@ -123,7 +129,6 @@ public class IntSortTester {
 			sorted = java.util.Arrays.copyOf(input, input.length);
 			java.util.Arrays.sort(sorted);
 			StopWatch watch = new StopWatch();
-			Runtime runtime = Runtime.getRuntime();
 
 			Thread runner = new Thread(new Runnable() {
 					@Override
@@ -134,9 +139,7 @@ public class IntSortTester {
 
 					}}
 			);
-			System.gc();
-			long freeBefore = runtime.freeMemory();
-			long freeAfter;
+
 			runner.start();
 			runner.join(100000); // 100 seconds
 			if (runner.isAlive()) {
@@ -146,8 +149,6 @@ public class IntSortTester {
 			else {
 				performance = watch.getElapsedTime();
 				correct = correctnessTest(input, sorted);
-				freeAfter = runtime.freeMemory();
-				System.out.printf("Diff free memory %d\n", freeBefore-freeAfter);
 			}
 		}
 		catch (InterruptedException e) {
@@ -173,21 +174,38 @@ public class IntSortTester {
 	}
 
 	public static void main(String[] args) {
-		String className = "edu.bsu.cs.sorting.javautil.integer.DualPivotQuicksort";
+		String className = "edu.bsu.cs.sorting.buis.integer.HybridSort";
 		System.out.println(className);
 		IntSortTester tester = new IntSortTester(className);
+		TestResultMultiMap mmap = new TestResultMultiMap();
 		
-		for (int iPow = 3; iPow < 10; iPow++) {
+		for (int iPow = 3; iPow <= 8; iPow++) {
 			int size = pow10(iPow);
 			System.out.printf("%nArray Size= %,d%n", size);
-			int data[] = randomIntArray(size, 10*size);
-			System.out.printf("Starting Test%n", size);
-			TestResult result = tester.test(data);
-			System.out.println("correct= " + result.correct);
-			if (result.correct)
-				System.out.printf("performance= %f seconds%n", result.performance);
-			else
-				break;
+			
+			for (int repeatCount=0; repeatCount<5; repeatCount++) {
+				int data[] = randomIntArray(size, 10*size);
+				System.out.printf("Starting Test%n", size);
+				TestResult result = tester.test(data);
+				mmap.put(size, result);
+
+				System.out.println("correct= " + result.correct);
+				if (result.correct)
+					System.out.printf("performance= %f seconds%n", result.performance);
+				else
+					break;
+			}
 		}
+		
+		TestResultTableModel tModel = new TestResultTableModel(mmap);
+		JTable table = new JTable(tModel);
+		JScrollPane pane = new JScrollPane(table);
+		JFrame frame = new JFrame();
+		frame.setTitle(className);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.getContentPane().add(pane);
+		frame.pack();
+		frame.setVisible(true);
+		
 	}
 }

@@ -16,7 +16,8 @@ public class HeapSort {
 		int length = iEnd - iStart;
 		int heapSize = length;
 		buildMaxHeap(array, iStart, iEnd);
-		for (int iSubrange = length - 1; iSubrange >= 2; iSubrange--) {
+		
+		for (int iSubrange = length - 1; iSubrange > 0; iSubrange--) {
 			int temp = array[iStart];
 			array[iStart] = array[iSubrange + iStart];
 			array[iSubrange + iStart] = temp;
@@ -37,18 +38,19 @@ public class HeapSort {
 	}
 
 	private static void maxHeapify(final int[] array, final int iStart,
-			final int iEnd, int iSubrange, final int heapSize) {
-		int iSubrangeLeft = 2 * iSubrange + 1;
-		int iSubrangeRight = 2 * iSubrange + 2;
+			final int iEnd, int iSubrange,  final int heapSize ) {
+		int iSubrangeLeft = 2 * iSubrange;
+		int iSubrangeRight = 2 * iSubrange + 1;
 		int iSubrangeLargest;
+		iSubrangeLargest = iSubrange;
 		while (iSubrangeRight < heapSize) {
 			if (iSubrangeLeft < heapSize && // left child exists
 					array[iSubrangeLeft + iStart] > array[iSubrange + iStart]) {
 				iSubrangeLargest = iSubrangeLeft;
-			} else {
-				iSubrangeLargest = iSubrange;
-			}
-			if (array[iSubrangeRight + iStart] > array[iSubrangeLargest
+			} //else {
+			//	iSubrangeLargest = iSubrange;
+			//}
+			if (iSubrangeRight < heapSize && array[iSubrangeRight + iStart] > array[iSubrangeLargest
 			                                           + iStart]) {
 				iSubrangeLargest = iSubrangeRight;
 			}
@@ -56,10 +58,11 @@ public class HeapSort {
 				int temp = array[iSubrange + iStart];
 				array[iSubrange + iStart] = array[iSubrangeLargest + iStart];
 				array[iSubrangeLargest + iStart] = temp;
+				//maxHeapify(array, iStart, iEnd, iSubrangeLargest, heapSize);
 				// tail recursion elimination
 				iSubrange = iSubrangeLargest;
-				iSubrangeLeft = 2 * iSubrange + 1;
-				iSubrangeRight = 2 * iSubrange + 2;
+				iSubrangeLeft = 2 * iSubrange;
+				iSubrangeRight = 2 * iSubrange + 1;
 			} else {
 				return;
 			}

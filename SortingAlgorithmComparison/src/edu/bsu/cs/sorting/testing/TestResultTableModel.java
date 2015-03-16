@@ -24,10 +24,17 @@ public class TestResultTableModel extends AbstractTableModel {
 	
 	@Override
 	public int getRowCount() {
-		map.keySet().size();
-		return 0;
+		return map.keySet().size();
 	}
 
+	@Override
+	public Class<?> getColumnClass(int columnIndex) {
+		if (columnIndex == 0)
+			return Integer.class;
+		
+		return Double.class;
+	}
+	
 	@Override
 	public int getColumnCount() {
 		int max = 0;

@@ -14,7 +14,7 @@ public class IntroSort {
 	private static final int INSERTION_SORT_THRESHOLD = 47;
 	
 	public static <T extends Comparable<? super T>> void sort(T[] array) {
-		sort(array, 0, array.length, 2*log2(array.length));
+		sort(array, 0, array.length, 8*log2(array.length));
 	}	
 	
 	/**
@@ -29,7 +29,8 @@ public class IntroSort {
 	
 	private static <T extends Comparable<? super T>> int pickPivotIndex(final T[] array, int iStart, int iEnd) {
 		// consider median of 3
-		// consider median of N/logN ??
+		// consider median of sqrt(N/logN_) ??
+		// pseudo-median of 9
 		return iStart;
 	}
 	

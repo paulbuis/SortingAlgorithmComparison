@@ -7,6 +7,8 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.InvocationTargetException;
 
+import javax.swing.*;
+
 /**
  * This program demonstrates the merge sort algorithm by sorting an array that
  * is filled with random numbers.
@@ -63,7 +65,6 @@ public class GenericSortTester<T extends Comparable<T>> {
 				if (cause instanceof java.lang.ThreadDeath)
 					return false;
 				cause.printStackTrace();
-				//System.err.println(e.getCause().toString() + " causing:");
 			}
 			System.err.println(e.toString());
 		} catch (IllegalAccessException e) {
@@ -93,23 +94,6 @@ public class GenericSortTester<T extends Comparable<T>> {
 		return true;
 	}
 	
-	/**
-    Creates an array filled with random values.
-    @param length the length of the array
-    @param n the number of possible random values
-    @return an array filled with length numbers between
-    0 and n - 1
-    */
-	public static int[] randomIntArray(final int length, int n)
-	{  
-		Random generator = new Random(0);
-		int[] a = new int[length]; 
-		for (int i = 0; i < length; i++) {
-			a[i] = generator.nextInt(n);
-		}
-
-		return a;
-	}
 
 	/**
     Creates an array filled with random values.
@@ -140,7 +124,6 @@ public class GenericSortTester<T extends Comparable<T>> {
 			sorted = java.util.Arrays.copyOf(input, input.length);
 			java.util.Arrays.sort(sorted);
 			StopWatch watch = new StopWatch();
-			Runtime runtime = Runtime.getRuntime();
 
 			Thread runner = new Thread(new Runnable() {
 					@Override
@@ -148,14 +131,11 @@ public class GenericSortTester<T extends Comparable<T>> {
 						watch.start();
 						sort(input); // returns success boolean, ignored!
 						watch.stop();
-
 					}}
 			);
-			System.gc();
-			long freeBefore = runtime.freeMemory();
-			long freeAfter;
+			
 			runner.start();
-			runner.join(100000); // 100 seconds
+			runner.join(100000); // 100 seconds = 100,000 milliseconds
 			if (runner.isAlive()) {
 				System.err.println("100 second timer expired!");
 				runner.stop();
@@ -163,8 +143,6 @@ public class GenericSortTester<T extends Comparable<T>> {
 			else {
 				performance = watch.getElapsedTime();
 				correct = correctnessTest(input, sorted);
-				freeAfter = runtime.freeMemory();
-				System.out.printf("Diff free memory %d\n", freeBefore-freeAfter);
 			}
 		}
 		catch (InterruptedException e) {
@@ -190,21 +168,38 @@ public class GenericSortTester<T extends Comparable<T>> {
 	}
 
 	public static void main(String[] args) {
-		String className = "edu.bsu.cs.sorting.javautil.generic.ComparableTimSort";
+		String className = "edu.bsu.cs.sorting.buis.generic.HeapSort";
 		System.out.println(className);
 		GenericSortTester<Integer> tester = new GenericSortTester<Integer>(className);
+		TestResultMultiMap mmap = new TestResultMultiMap();
 		
-		for (int iPow = 3; iPow < 10; iPow++) {
+		for (int iPow = 3; iPow <= 7; iPow++) {
 			int size = pow10(iPow);
 			System.out.printf("%nArray Size= %,d%n", size);
-			Integer data[] = randomIntegerArray(size, 10*size);
-			System.out.printf("Starting Test%n", size);
-			TestResult result = tester.test(data);
-			System.out.println("correct= " + result.correct);
-			if (result.correct)
-				System.out.printf("performance= %f seconds%n", result.performance);
-			else
-				break;
+			
+			for (int repeatCount=0; repeatCount<5; repeatCount++) {
+				Integer data[] = randomIntegerArray(size, Integer.MAX_VALUE);
+				System.out.printf("Starting Test%n", size);
+				TestResult result = tester.test(data);
+				mmap.put(size, result);
+
+				System.out.println("correct= " + result.correct);
+				if (result.correct)
+					System.out.printf("performance= %f seconds%n", result.performance);
+				else
+					break;
+			}
 		}
+		
+		TestResultTableModel tModel = new TestResultTableModel(mmap);
+		JTable table = new JTable(tModel);
+		JScrollPane pane = new JScrollPane(table);
+		JFrame frame = new JFrame();
+		frame.setTitle(className);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.getContentPane().add(pane);
+		frame.pack();
+		frame.setVisible(true);
+		
 	}
 }

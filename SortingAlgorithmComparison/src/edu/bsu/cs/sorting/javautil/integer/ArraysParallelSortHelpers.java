@@ -23,12 +23,12 @@
  * questions.
  */
 
-package edu.bsu.cs.sorting.javautil.parallel;
+package edu.bsu.cs.sorting.javautil.integer;
 
 import java.util.*;
 import java.util.concurrent.CountedCompleter;
 
-import edu.bsu.cs.sorting.javautil.integer.DualPivotQuicksort;
+import edu.bsu.cs.sorting.javautil.generic.TimSort;
 
 /**
  * Helper utilities for the parallel sort methods in Arrays.parallelSort.
@@ -285,7 +285,7 @@ import edu.bsu.cs.sorting.javautil.integer.DualPivotQuicksort;
 					s = new EmptyCompleter(bc);
 					n = q;
 				}
-				DualPivotQuicksort.sort(a, b, b + n - 1, w, wb, n);
+				DualPivotQuicksort.sort(a, b, b + n - 1);
 				s.tryComplete();
 			}
 		}

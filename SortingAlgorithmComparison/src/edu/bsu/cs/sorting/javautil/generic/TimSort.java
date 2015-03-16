@@ -27,7 +27,7 @@
 /* Derived from OpenJDK jdk8-b123 class of same name 
  * in java.util
  */
-package edu.bsu.cs.sorting.javautil.parallel;
+package edu.bsu.cs.sorting.javautil.generic;
 
 import java.util.*;
 
